@@ -1,4 +1,4 @@
-/* GstInterTest
+/* DvsInterTest
  * Copyright (C) 2011 David Schleef <ds@schleef.org>
  * Copyright (C) 2010 Entropy Wave Inc
  *
@@ -34,8 +34,8 @@
 //#define GETTEXT_PACKAGE "intertest"
 
 
-typedef struct _GstInterTest GstInterTest;
-struct _GstInterTest
+typedef struct _DvsInterTest DvsInterTest;
+struct _DvsInterTest
 {
   GstElement *pipeline;
   GstBus *bus;
@@ -48,16 +48,16 @@ struct _GstInterTest
   guint timer_id;
 };
 
-GstInterTest *gst_inter_test_new (void);
-void gst_inter_test_free (GstInterTest * intertest);
-void gst_inter_test_create_pipeline_server (GstInterTest * intertest);
-void gst_inter_test_create_pipeline_vts (GstInterTest * intertest);
-void gst_inter_test_create_pipeline_playbin (GstInterTest * intertest,
+DvsInterTest *dvs_inter_test_new (void);
+void dvs_inter_test_free (DvsInterTest * intertest);
+void dvs_inter_test_create_pipeline_server (DvsInterTest * intertest);
+void dvs_inter_test_create_pipeline_vts (DvsInterTest * intertest);
+void dvs_inter_test_create_pipeline_playbin (DvsInterTest * intertest,
     const char *uri);
-void gst_inter_test_start (GstInterTest * intertest);
-void gst_inter_test_stop (GstInterTest * intertest);
+void dvs_inter_test_start (DvsInterTest * intertest);
+void dvs_inter_test_stop (DvsInterTest * intertest);
 
-static gboolean gst_inter_test_handle_message (GstBus * bus,
+static gboolean dvs_inter_test_handle_message (GstBus * bus,
     GstMessage * message, gpointer data);
 static gboolean onesecond_timer (gpointer priv);
 
@@ -76,8 +76,8 @@ main (int argc, char *argv[])
 {
   GError *error = NULL;
   GOptionContext *context;
-  GstInterTest *intertest1;
-  GstInterTest *intertest2;
+  DvsInterTest *intertest1;
+  DvsInterTest *intertest2;
   GMainLoop *main_loop;
 
 #if !GLIB_CHECK_VERSION (2, 31, 0)
@@ -94,13 +94,13 @@ main (int argc, char *argv[])
   }
   g_option_context_free (context);
 
-  intertest1 = gst_inter_test_new ();
-  gst_inter_test_create_pipeline_server (intertest1);
-  gst_inter_test_start (intertest1);
+  intertest1 = dvs_inter_test_new ();
+  dvs_inter_test_create_pipeline_server (intertest1);
+  dvs_inter_test_start (intertest1);
 
-  intertest2 = gst_inter_test_new ();
-  gst_inter_test_create_pipeline_playbin (intertest2, NULL);
-  gst_inter_test_start (intertest2);
+  intertest2 = dvs_inter_test_new ();
+  dvs_inter_test_create_pipeline_playbin (intertest2, NULL);
+  dvs_inter_test_start (intertest2);
 
   main_loop = g_main_loop_new (NULL, TRUE);
   intertest1->main_loop = main_loop;
@@ -113,18 +113,18 @@ main (int argc, char *argv[])
 }
 
 
-GstInterTest *
-gst_inter_test_new (void)
+DvsInterTest *
+dvs_inter_test_new (void)
 {
-  GstInterTest *intertest;
+  DvsInterTest *intertest;
 
-  intertest = g_new0 (GstInterTest, 1);
+  intertest = g_new0 (DvsInterTest, 1);
 
   return intertest;
 }
 
 void
-gst_inter_test_free (GstInterTest * intertest)
+dvs_inter_test_free (DvsInterTest * intertest)
 {
   if (intertest->source_element) {
     gst_object_unref (intertest->source_element);
@@ -149,13 +149,13 @@ gst_inter_test_free (GstInterTest * intertest)
 }
 
 void
-gst_inter_test_create_pipeline_playbin (GstInterTest * intertest,
+dvs_inter_test_create_pipeline_playbin (DvsInterTest * intertest,
     const char *uri)
 {
   GstElement *pipeline;
 
   if (uri == NULL) {
-    gst_inter_test_create_pipeline_vts (intertest);
+    dvs_inter_test_create_pipeline_vts (intertest);
     return;
   }
 
@@ -167,7 +167,7 @@ gst_inter_test_create_pipeline_playbin (GstInterTest * intertest,
 
   gst_pipeline_set_auto_flush_bus (GST_PIPELINE (pipeline), FALSE);
   intertest->bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
-  gst_bus_add_watch (intertest->bus, gst_inter_test_handle_message, intertest);
+  gst_bus_add_watch (intertest->bus, dvs_inter_test_handle_message, intertest);
 
   intertest->source_element =
       gst_bin_get_by_name (GST_BIN (pipeline), "source");
@@ -178,7 +178,7 @@ gst_inter_test_create_pipeline_playbin (GstInterTest * intertest,
 }
 
 void
-gst_inter_test_create_pipeline_vts (GstInterTest * intertest)
+dvs_inter_test_create_pipeline_vts (DvsInterTest * intertest)
 {
   GString *pipe_desc;
   GstElement *pipeline;
@@ -211,7 +211,7 @@ gst_inter_test_create_pipeline_vts (GstInterTest * intertest)
 
   gst_pipeline_set_auto_flush_bus (GST_PIPELINE (pipeline), FALSE);
   intertest->bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
-  gst_bus_add_watch (intertest->bus, gst_inter_test_handle_message, intertest);
+  gst_bus_add_watch (intertest->bus, dvs_inter_test_handle_message, intertest);
 
   intertest->source_element =
       gst_bin_get_by_name (GST_BIN (pipeline), "source");
@@ -219,7 +219,7 @@ gst_inter_test_create_pipeline_vts (GstInterTest * intertest)
 }
 
 void
-gst_inter_test_create_pipeline_server (GstInterTest * intertest)
+dvs_inter_test_create_pipeline_server (DvsInterTest * intertest)
 {
   GString *pipe_desc;
   GstElement *pipeline;
@@ -248,7 +248,7 @@ gst_inter_test_create_pipeline_server (GstInterTest * intertest)
 
   gst_pipeline_set_auto_flush_bus (GST_PIPELINE (pipeline), FALSE);
   intertest->bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
-  gst_bus_add_watch (intertest->bus, gst_inter_test_handle_message, intertest);
+  gst_bus_add_watch (intertest->bus, dvs_inter_test_handle_message, intertest);
 
   intertest->source_element =
       gst_bin_get_by_name (GST_BIN (pipeline), "source");
@@ -256,7 +256,7 @@ gst_inter_test_create_pipeline_server (GstInterTest * intertest)
 }
 
 void
-gst_inter_test_start (GstInterTest * intertest)
+dvs_inter_test_start (DvsInterTest * intertest)
 {
   gst_element_set_state (intertest->pipeline, GST_STATE_READY);
 
@@ -264,7 +264,7 @@ gst_inter_test_start (GstInterTest * intertest)
 }
 
 void
-gst_inter_test_stop (GstInterTest * intertest)
+dvs_inter_test_stop (DvsInterTest * intertest)
 {
   gst_element_set_state (intertest->pipeline, GST_STATE_NULL);
 
@@ -272,42 +272,42 @@ gst_inter_test_stop (GstInterTest * intertest)
 }
 
 static void
-gst_inter_test_handle_eos (GstInterTest * intertest)
+dvs_inter_test_handle_eos (DvsInterTest * intertest)
 {
-  gst_inter_test_stop (intertest);
+  dvs_inter_test_stop (intertest);
 }
 
 static void
-gst_inter_test_handle_error (GstInterTest * intertest, GError * error,
+dvs_inter_test_handle_error (DvsInterTest * intertest, GError * error,
     const char *debug)
 {
   g_print ("error: %s\n", error->message);
-  gst_inter_test_stop (intertest);
+  dvs_inter_test_stop (intertest);
 }
 
 static void
-gst_inter_test_handle_warning (GstInterTest * intertest, GError * error,
+dvs_inter_test_handle_warning (DvsInterTest * intertest, GError * error,
     const char *debug)
 {
   g_print ("warning: %s\n", error->message);
 }
 
 static void
-gst_inter_test_handle_info (GstInterTest * intertest, GError * error,
+dvs_inter_test_handle_info (DvsInterTest * intertest, GError * error,
     const char *debug)
 {
   g_print ("info: %s\n", error->message);
 }
 
 static void
-gst_inter_test_handle_null_to_ready (GstInterTest * intertest)
+dvs_inter_test_handle_null_to_ready (DvsInterTest * intertest)
 {
   gst_element_set_state (intertest->pipeline, GST_STATE_PAUSED);
 
 }
 
 static void
-gst_inter_test_handle_ready_to_paused (GstInterTest * intertest)
+dvs_inter_test_handle_ready_to_paused (DvsInterTest * intertest)
 {
   if (!intertest->paused_for_buffering) {
     gst_element_set_state (intertest->pipeline, GST_STATE_PLAYING);
@@ -315,25 +315,25 @@ gst_inter_test_handle_ready_to_paused (GstInterTest * intertest)
 }
 
 static void
-gst_inter_test_handle_paused_to_playing (GstInterTest * intertest)
+dvs_inter_test_handle_paused_to_playing (DvsInterTest * intertest)
 {
 
 }
 
 static void
-gst_inter_test_handle_playing_to_paused (GstInterTest * intertest)
+dvs_inter_test_handle_playing_to_paused (DvsInterTest * intertest)
 {
 
 }
 
 static void
-gst_inter_test_handle_paused_to_ready (GstInterTest * intertest)
+dvs_inter_test_handle_paused_to_ready (DvsInterTest * intertest)
 {
 
 }
 
 static void
-gst_inter_test_handle_ready_to_null (GstInterTest * intertest)
+dvs_inter_test_handle_ready_to_null (DvsInterTest * intertest)
 {
   //g_main_loop_quit (intertest->main_loop);
 
@@ -341,14 +341,14 @@ gst_inter_test_handle_ready_to_null (GstInterTest * intertest)
 
 
 static gboolean
-gst_inter_test_handle_message (GstBus * bus, GstMessage * message,
+dvs_inter_test_handle_message (GstBus * bus, GstMessage * message,
     gpointer data)
 {
-  GstInterTest *intertest = (GstInterTest *) data;
+  DvsInterTest *intertest = (DvsInterTest *) data;
 
   switch (GST_MESSAGE_TYPE (message)) {
     case GST_MESSAGE_EOS:
-      gst_inter_test_handle_eos (intertest);
+      dvs_inter_test_handle_eos (intertest);
       break;
     case GST_MESSAGE_ERROR:
     {
@@ -356,7 +356,7 @@ gst_inter_test_handle_message (GstBus * bus, GstMessage * message,
       gchar *debug;
 
       gst_message_parse_error (message, &error, &debug);
-      gst_inter_test_handle_error (intertest, error, debug);
+      dvs_inter_test_handle_error (intertest, error, debug);
       g_error_free (error);
       g_free (debug);
     }
@@ -367,7 +367,7 @@ gst_inter_test_handle_message (GstBus * bus, GstMessage * message,
       gchar *debug;
 
       gst_message_parse_warning (message, &error, &debug);
-      gst_inter_test_handle_warning (intertest, error, debug);
+      dvs_inter_test_handle_warning (intertest, error, debug);
       g_error_free (error);
       g_free (debug);
     }
@@ -378,7 +378,7 @@ gst_inter_test_handle_message (GstBus * bus, GstMessage * message,
       gchar *debug;
 
       gst_message_parse_info (message, &error, &debug);
-      gst_inter_test_handle_info (intertest, error, debug);
+      dvs_inter_test_handle_info (intertest, error, debug);
       g_error_free (error);
       g_free (debug);
     }
@@ -404,22 +404,22 @@ gst_inter_test_handle_message (GstBus * bus, GstMessage * message,
               gst_element_state_get_name (newstate));
         switch (GST_STATE_TRANSITION (oldstate, newstate)) {
           case GST_STATE_CHANGE_NULL_TO_READY:
-            gst_inter_test_handle_null_to_ready (intertest);
+            dvs_inter_test_handle_null_to_ready (intertest);
             break;
           case GST_STATE_CHANGE_READY_TO_PAUSED:
-            gst_inter_test_handle_ready_to_paused (intertest);
+            dvs_inter_test_handle_ready_to_paused (intertest);
             break;
           case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
-            gst_inter_test_handle_paused_to_playing (intertest);
+            dvs_inter_test_handle_paused_to_playing (intertest);
             break;
           case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
-            gst_inter_test_handle_playing_to_paused (intertest);
+            dvs_inter_test_handle_playing_to_paused (intertest);
             break;
           case GST_STATE_CHANGE_PAUSED_TO_READY:
-            gst_inter_test_handle_paused_to_ready (intertest);
+            dvs_inter_test_handle_paused_to_ready (intertest);
             break;
           case GST_STATE_CHANGE_READY_TO_NULL:
-            gst_inter_test_handle_ready_to_null (intertest);
+            dvs_inter_test_handle_ready_to_null (intertest);
             break;
           default:
             if (verbose)
@@ -480,7 +480,7 @@ gst_inter_test_handle_message (GstBus * bus, GstMessage * message,
 static gboolean
 onesecond_timer (gpointer priv)
 {
-  //GstInterTest *intertest = (GstInterTest *)priv;
+  //DvsInterTest *intertest = (DvsInterTest *)priv;
 
   g_print (".\n");
 

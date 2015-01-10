@@ -26,20 +26,20 @@
 
 G_BEGIN_DECLS
 
-#define GST_TYPE_INTER_AUDIO_SRC   (gst_inter_audio_src_get_type())
-#define GST_INTER_AUDIO_SRC(obj)   (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_INTER_AUDIO_SRC,GstInterAudioSrc))
-#define GST_INTER_AUDIO_SRC_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_INTER_AUDIO_SRC,GstInterAudioSrcClass))
-#define GST_IS_INTER_AUDIO_SRC(obj)   (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_INTER_AUDIO_SRC))
-#define GST_IS_INTER_AUDIO_SRC_CLASS(obj)   (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_INTER_AUDIO_SRC))
+#define DVS_TYPE_INTER_AUDIO_SRC   (dvs_inter_audio_src_get_type())
+#define GST_INTER_AUDIO_SRC(obj)   (G_TYPE_CHECK_INSTANCE_CAST((obj),DVS_TYPE_INTER_AUDIO_SRC,DvsInterAudioSrc))
+#define GST_INTER_AUDIO_SRC_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST((klass),DVS_TYPE_INTER_AUDIO_SRC,DvsInterAudioSrcClass))
+#define GST_IS_INTER_AUDIO_SRC(obj)   (G_TYPE_CHECK_INSTANCE_TYPE((obj),DVS_TYPE_INTER_AUDIO_SRC))
+#define GST_IS_INTER_AUDIO_SRC_CLASS(obj)   (G_TYPE_CHECK_CLASS_TYPE((klass),DVS_TYPE_INTER_AUDIO_SRC))
 
-typedef struct _GstInterAudioSrc GstInterAudioSrc;
-typedef struct _GstInterAudioSrcClass GstInterAudioSrcClass;
+typedef struct _DvsInterAudioSrc DvsInterAudioSrc;
+typedef struct _DvsInterAudioSrcClass DvsInterAudioSrcClass;
 
-struct _GstInterAudioSrc
+struct _DvsInterAudioSrc
 {
   GstBaseSrc base_interaudiosrc;
 
-  GstInterSurface *surface;
+  DvsInterSurface *surface;
   char *channel;
 
   guint64 n_samples;
@@ -48,12 +48,12 @@ struct _GstInterAudioSrc
   guint64 buffer_time, latency_time, period_time;
 };
 
-struct _GstInterAudioSrcClass
+struct _DvsInterAudioSrcClass
 {
   GstBaseSrcClass base_interaudiosrc_class;
 };
 
-GType gst_inter_audio_src_get_type (void);
+GType dvs_inter_audio_src_get_type (void);
 
 G_END_DECLS
 

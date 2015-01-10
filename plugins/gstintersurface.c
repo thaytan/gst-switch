@@ -28,11 +28,11 @@
 static GList *list;
 static GMutex mutex;
 
-GstInterSurface *
-gst_inter_surface_get (const char *name)
+DvsInterSurface *
+dvs_inter_surface_get (const char *name)
 {
   GList *g;
-  GstInterSurface *surface;
+  DvsInterSurface *surface;
 
   g_mutex_lock (&mutex);
   for (g = list; g; g = g_list_next (g)) {
@@ -44,7 +44,7 @@ gst_inter_surface_get (const char *name)
     }
   }
 
-  surface = g_malloc0 (sizeof (GstInterSurface));
+  surface = g_malloc0 (sizeof (DvsInterSurface));
   surface->ref_count = 1;
   surface->name = g_strdup (name);
   g_mutex_init (&surface->mutex);
@@ -60,7 +60,7 @@ gst_inter_surface_get (const char *name)
 }
 
 void
-gst_inter_surface_unref (GstInterSurface * surface)
+dvs_inter_surface_unref (DvsInterSurface * surface)
 {
   /* Mutex needed here, otherwise refcount might become 0
    * and someone else requests the same surface again before
@@ -70,7 +70,7 @@ gst_inter_surface_unref (GstInterSurface * surface)
     GList *g;
 
     for (g = list; g; g = g_list_next (g)) {
-      GstInterSurface *tmp = g->data;
+      DvsInterSurface *tmp = g->data;
       if (strcmp (tmp->name, surface->name) == 0) {
         list = g_list_delete_link (list, g);
         break;
