@@ -1823,8 +1823,8 @@ load_gst_plugins()
   /* Try loading from installed plugin path */
   gst_registry_scan_path (r, GST_SWITCH_PLUGIN_PATH);
 
-  if (gst_registry_find_plugin (r, "dvsinter") == NULL)
-    g_critical("Failed to load dvsinter plugin. Please set GST_PLUGIN_PATH to locate it");
+  if (gst_registry_find_plugin (r, "gswinter") == NULL)
+    g_critical("Failed to load gswinter plugin. Please set GST_PLUGIN_PATH to locate it");
 }
 
 int

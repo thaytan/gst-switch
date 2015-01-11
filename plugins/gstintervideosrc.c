@@ -44,27 +44,27 @@
 #include "gstintervideosrc.h"
 #include <string.h>
 
-GST_DEBUG_CATEGORY_STATIC (dvs_inter_video_src_debug_category);
-#define GST_CAT_DEFAULT dvs_inter_video_src_debug_category
+GST_DEBUG_CATEGORY_STATIC (gsw_inter_video_src_debug_category);
+#define GST_CAT_DEFAULT gsw_inter_video_src_debug_category
 
 /* prototypes */
-static void dvs_inter_video_src_set_property (GObject * object,
+static void gsw_inter_video_src_set_property (GObject * object,
     guint property_id, const GValue * value, GParamSpec * pspec);
-static void dvs_inter_video_src_get_property (GObject * object,
+static void gsw_inter_video_src_get_property (GObject * object,
     guint property_id, GValue * value, GParamSpec * pspec);
-static void dvs_inter_video_src_finalize (GObject * object);
+static void gsw_inter_video_src_finalize (GObject * object);
 
-static GstCaps *dvs_inter_video_src_get_caps (GstBaseSrc * src,
+static GstCaps *gsw_inter_video_src_get_caps (GstBaseSrc * src,
     GstCaps * filter);
-static gboolean dvs_inter_video_src_set_caps (GstBaseSrc * src, GstCaps * caps);
-static GstCaps *dvs_inter_video_src_fixate (GstBaseSrc * src, GstCaps * caps);
-static gboolean dvs_inter_video_src_start (GstBaseSrc * src);
-static gboolean dvs_inter_video_src_stop (GstBaseSrc * src);
+static gboolean gsw_inter_video_src_set_caps (GstBaseSrc * src, GstCaps * caps);
+static GstCaps *gsw_inter_video_src_fixate (GstBaseSrc * src, GstCaps * caps);
+static gboolean gsw_inter_video_src_start (GstBaseSrc * src);
+static gboolean gsw_inter_video_src_stop (GstBaseSrc * src);
 static void
-dvs_inter_video_src_get_times (GstBaseSrc * src, GstBuffer * buffer,
+gsw_inter_video_src_get_times (GstBaseSrc * src, GstBuffer * buffer,
     GstClockTime * start, GstClockTime * end);
 static GstFlowReturn
-dvs_inter_video_src_create (GstBaseSrc * src, guint64 offset, guint size,
+gsw_inter_video_src_create (GstBaseSrc * src, guint64 offset, guint size,
     GstBuffer ** buf);
 
 enum
@@ -74,7 +74,7 @@ enum
 };
 
 /* pad templates */
-static GstStaticPadTemplate dvs_inter_video_src_src_template =
+static GstStaticPadTemplate gsw_inter_video_src_src_template =
 GST_STATIC_PAD_TEMPLATE ("src",
     GST_PAD_SRC,
     GST_PAD_ALWAYS,
@@ -83,21 +83,21 @@ GST_STATIC_PAD_TEMPLATE ("src",
 
 
 /* class initialization */
-#define parent_class dvs_inter_video_src_parent_class
-G_DEFINE_TYPE (DvsInterVideoSrc, dvs_inter_video_src, GST_TYPE_BASE_SRC);
+#define parent_class gsw_inter_video_src_parent_class
+G_DEFINE_TYPE (GswInterVideoSrc, gsw_inter_video_src, GST_TYPE_BASE_SRC);
 
 static void
-dvs_inter_video_src_class_init (DvsInterVideoSrcClass * klass)
+gsw_inter_video_src_class_init (GswInterVideoSrcClass * klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GstElementClass *element_class = GST_ELEMENT_CLASS (klass);
   GstBaseSrcClass *base_src_class = GST_BASE_SRC_CLASS (klass);
 
-  GST_DEBUG_CATEGORY_INIT (dvs_inter_video_src_debug_category, "intervideosrc",
+  GST_DEBUG_CATEGORY_INIT (gsw_inter_video_src_debug_category, "intervideosrc",
       0, "debug category for intervideosrc element");
 
   gst_element_class_add_pad_template (element_class,
-      gst_static_pad_template_get (&dvs_inter_video_src_src_template));
+      gst_static_pad_template_get (&gsw_inter_video_src_src_template));
 
   gst_element_class_set_static_metadata (element_class,
       "Internal video source",
@@ -105,16 +105,16 @@ dvs_inter_video_src_class_init (DvsInterVideoSrcClass * klass)
       "Virtual video source for internal process communication",
       "David Schleef <ds@schleef.org>");
 
-  gobject_class->set_property = dvs_inter_video_src_set_property;
-  gobject_class->get_property = dvs_inter_video_src_get_property;
-  gobject_class->finalize = dvs_inter_video_src_finalize;
-  base_src_class->get_caps = GST_DEBUG_FUNCPTR (dvs_inter_video_src_get_caps);
-  base_src_class->set_caps = GST_DEBUG_FUNCPTR (dvs_inter_video_src_set_caps);
-  base_src_class->fixate = GST_DEBUG_FUNCPTR (dvs_inter_video_src_fixate);
-  base_src_class->start = GST_DEBUG_FUNCPTR (dvs_inter_video_src_start);
-  base_src_class->stop = GST_DEBUG_FUNCPTR (dvs_inter_video_src_stop);
-  base_src_class->get_times = GST_DEBUG_FUNCPTR (dvs_inter_video_src_get_times);
-  base_src_class->create = GST_DEBUG_FUNCPTR (dvs_inter_video_src_create);
+  gobject_class->set_property = gsw_inter_video_src_set_property;
+  gobject_class->get_property = gsw_inter_video_src_get_property;
+  gobject_class->finalize = gsw_inter_video_src_finalize;
+  base_src_class->get_caps = GST_DEBUG_FUNCPTR (gsw_inter_video_src_get_caps);
+  base_src_class->set_caps = GST_DEBUG_FUNCPTR (gsw_inter_video_src_set_caps);
+  base_src_class->fixate = GST_DEBUG_FUNCPTR (gsw_inter_video_src_fixate);
+  base_src_class->start = GST_DEBUG_FUNCPTR (gsw_inter_video_src_start);
+  base_src_class->stop = GST_DEBUG_FUNCPTR (gsw_inter_video_src_stop);
+  base_src_class->get_times = GST_DEBUG_FUNCPTR (gsw_inter_video_src_get_times);
+  base_src_class->create = GST_DEBUG_FUNCPTR (gsw_inter_video_src_create);
 
   g_object_class_install_property (gobject_class, PROP_CHANNEL,
       g_param_spec_string ("channel", "Channel",
@@ -123,7 +123,7 @@ dvs_inter_video_src_class_init (DvsInterVideoSrcClass * klass)
 }
 
 static void
-dvs_inter_video_src_init (DvsInterVideoSrc * intervideosrc)
+gsw_inter_video_src_init (GswInterVideoSrc * intervideosrc)
 {
   gst_base_src_set_format (GST_BASE_SRC (intervideosrc), GST_FORMAT_TIME);
   gst_base_src_set_live (GST_BASE_SRC (intervideosrc), TRUE);
@@ -132,10 +132,10 @@ dvs_inter_video_src_init (DvsInterVideoSrc * intervideosrc)
 }
 
 void
-dvs_inter_video_src_set_property (GObject * object, guint property_id,
+gsw_inter_video_src_set_property (GObject * object, guint property_id,
     const GValue * value, GParamSpec * pspec)
 {
-  DvsInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (object);
+  GswInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (object);
 
   switch (property_id) {
     case PROP_CHANNEL:
@@ -149,10 +149,10 @@ dvs_inter_video_src_set_property (GObject * object, guint property_id,
 }
 
 void
-dvs_inter_video_src_get_property (GObject * object, guint property_id,
+gsw_inter_video_src_get_property (GObject * object, guint property_id,
     GValue * value, GParamSpec * pspec)
 {
-  DvsInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (object);
+  GswInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (object);
 
   switch (property_id) {
     case PROP_CHANNEL:
@@ -165,20 +165,20 @@ dvs_inter_video_src_get_property (GObject * object, guint property_id,
 }
 
 void
-dvs_inter_video_src_finalize (GObject * object)
+gsw_inter_video_src_finalize (GObject * object)
 {
-  DvsInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (object);
+  GswInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (object);
 
   /* clean up object here */
   g_free (intervideosrc->channel);
 
-  G_OBJECT_CLASS (dvs_inter_video_src_parent_class)->finalize (object);
+  G_OBJECT_CLASS (gsw_inter_video_src_parent_class)->finalize (object);
 }
 
 static GstCaps *
-dvs_inter_video_src_get_caps (GstBaseSrc * src, GstCaps * filter)
+gsw_inter_video_src_get_caps (GstBaseSrc * src, GstCaps * filter)
 {
-  DvsInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (src);
+  GswInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (src);
   GstCaps *caps;
 
   GST_DEBUG_OBJECT (intervideosrc, "get_caps");
@@ -211,9 +211,9 @@ dvs_inter_video_src_get_caps (GstBaseSrc * src, GstCaps * filter)
 }
 
 static gboolean
-dvs_inter_video_src_set_caps (GstBaseSrc * base, GstCaps * caps)
+gsw_inter_video_src_set_caps (GstBaseSrc * base, GstCaps * caps)
 {
-  DvsInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (base);
+  GswInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (base);
   GstVideoConverter *converter;
   GstVideoFrame src_frame, dest_frame;
   GstBuffer *src, *dest;
@@ -250,13 +250,13 @@ dvs_inter_video_src_set_caps (GstBaseSrc * base, GstCaps * caps)
 }
 
 static gboolean
-dvs_inter_video_src_start (GstBaseSrc * src)
+gsw_inter_video_src_start (GstBaseSrc * src)
 {
-  DvsInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (src);
+  GswInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (src);
 
   GST_DEBUG_OBJECT (intervideosrc, "start");
 
-  intervideosrc->surface = dvs_inter_surface_get (intervideosrc->channel);
+  intervideosrc->surface = gsw_inter_surface_get (intervideosrc->channel);
   intervideosrc->timestamp_offset = 0;
   intervideosrc->n_frames = 0;
 
@@ -264,13 +264,13 @@ dvs_inter_video_src_start (GstBaseSrc * src)
 }
 
 static gboolean
-dvs_inter_video_src_stop (GstBaseSrc * src)
+gsw_inter_video_src_stop (GstBaseSrc * src)
 {
-  DvsInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (src);
+  GswInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (src);
 
   GST_DEBUG_OBJECT (intervideosrc, "stop");
 
-  dvs_inter_surface_unref (intervideosrc->surface);
+  gsw_inter_surface_unref (intervideosrc->surface);
   intervideosrc->surface = NULL;
   gst_buffer_replace (&intervideosrc->black_frame, NULL);
 
@@ -278,7 +278,7 @@ dvs_inter_video_src_stop (GstBaseSrc * src)
 }
 
 static void
-dvs_inter_video_src_get_times (GstBaseSrc * src, GstBuffer * buffer,
+gsw_inter_video_src_get_times (GstBaseSrc * src, GstBuffer * buffer,
     GstClockTime * start, GstClockTime * end)
 {
   GST_DEBUG_OBJECT (src, "get_times");
@@ -303,10 +303,10 @@ dvs_inter_video_src_get_times (GstBaseSrc * src, GstBuffer * buffer,
 }
 
 static GstFlowReturn
-dvs_inter_video_src_create (GstBaseSrc * src, guint64 offset, guint size,
+gsw_inter_video_src_create (GstBaseSrc * src, guint64 offset, guint size,
     GstBuffer ** buf)
 {
-  DvsInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (src);
+  GswInterVideoSrc *intervideosrc = GST_INTER_VIDEO_SRC (src);
   GstCaps *caps;
   GstBuffer *buffer;
   gboolean is_gap = FALSE;
@@ -458,7 +458,7 @@ dvs_inter_video_src_create (GstBaseSrc * src, guint64 offset, guint size,
 }
 
 static GstCaps *
-dvs_inter_video_src_fixate (GstBaseSrc * src, GstCaps * caps)
+gsw_inter_video_src_fixate (GstBaseSrc * src, GstCaps * caps)
 {
   GstStructure *structure;
 

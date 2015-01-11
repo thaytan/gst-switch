@@ -25,32 +25,32 @@
 
 G_BEGIN_DECLS
 
-#define DVS_TYPE_INTER_AUDIO_SINK   (dvs_inter_audio_sink_get_type())
-#define GST_INTER_AUDIO_SINK(obj)   (G_TYPE_CHECK_INSTANCE_CAST((obj),DVS_TYPE_INTER_AUDIO_SINK,DvsInterAudioSink))
-#define GST_INTER_AUDIO_SINK_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST((klass),DVS_TYPE_INTER_AUDIO_SINK,DvsInterAudioSinkClass))
-#define GST_IS_INTER_AUDIO_SINK(obj)   (G_TYPE_CHECK_INSTANCE_TYPE((obj),DVS_TYPE_INTER_AUDIO_SINK))
-#define GST_IS_INTER_AUDIO_SINK_CLASS(obj)   (G_TYPE_CHECK_CLASS_TYPE((klass),DVS_TYPE_INTER_AUDIO_SINK))
+#define GSW_TYPE_INTER_AUDIO_SINK   (gsw_inter_audio_sink_get_type())
+#define GST_INTER_AUDIO_SINK(obj)   (G_TYPE_CHECK_INSTANCE_CAST((obj),GSW_TYPE_INTER_AUDIO_SINK,GswInterAudioSink))
+#define GST_INTER_AUDIO_SINK_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST((klass),GSW_TYPE_INTER_AUDIO_SINK,GswInterAudioSinkClass))
+#define GST_IS_INTER_AUDIO_SINK(obj)   (G_TYPE_CHECK_INSTANCE_TYPE((obj),GSW_TYPE_INTER_AUDIO_SINK))
+#define GST_IS_INTER_AUDIO_SINK_CLASS(obj)   (G_TYPE_CHECK_CLASS_TYPE((klass),GSW_TYPE_INTER_AUDIO_SINK))
 
-typedef struct _DvsInterAudioSink DvsInterAudioSink;
-typedef struct _DvsInterAudioSinkClass DvsInterAudioSinkClass;
+typedef struct _GswInterAudioSink GswInterAudioSink;
+typedef struct _GswInterAudioSinkClass GswInterAudioSinkClass;
 
-struct _DvsInterAudioSink
+struct _GswInterAudioSink
 {
   GstBaseSink base_interaudiosink;
 
-  DvsInterSurface *surface;
+  GswInterSurface *surface;
   char *channel;
 
   GstAdapter *input_adapter;
   GstAudioInfo info;
 };
 
-struct _DvsInterAudioSinkClass
+struct _GswInterAudioSinkClass
 {
   GstBaseSinkClass base_interaudiosink_class;
 };
 
-GType dvs_inter_audio_sink_get_type (void);
+GType gsw_inter_audio_sink_get_type (void);
 
 G_END_DECLS
 

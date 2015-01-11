@@ -25,33 +25,33 @@
 
 G_BEGIN_DECLS
 
-#define DVS_TYPE_INTER_SUB_SINK   (dvs_inter_sub_sink_get_type())
-#define GST_INTER_SUB_SINK(obj)   (G_TYPE_CHECK_INSTANCE_CAST((obj),DVS_TYPE_INTER_SUB_SINK,DvsInterSubSink))
-#define GST_INTER_SUB_SINK_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST((klass),DVS_TYPE_INTER_SUB_SINK,DvsInterSubSinkClass))
-#define GST_IS_INTER_SUB_SINK(obj)   (G_TYPE_CHECK_INSTANCE_TYPE((obj),DVS_TYPE_INTER_SUB_SINK))
-#define GST_IS_INTER_SUB_SINK_CLASS(obj)   (G_TYPE_CHECK_CLASS_TYPE((klass),DVS_TYPE_INTER_SUB_SINK))
+#define GSW_TYPE_INTER_SUB_SINK   (gsw_inter_sub_sink_get_type())
+#define GST_INTER_SUB_SINK(obj)   (G_TYPE_CHECK_INSTANCE_CAST((obj),GSW_TYPE_INTER_SUB_SINK,GswInterSubSink))
+#define GST_INTER_SUB_SINK_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST((klass),GSW_TYPE_INTER_SUB_SINK,GswInterSubSinkClass))
+#define GST_IS_INTER_SUB_SINK(obj)   (G_TYPE_CHECK_INSTANCE_TYPE((obj),GSW_TYPE_INTER_SUB_SINK))
+#define GST_IS_INTER_SUB_SINK_CLASS(obj)   (G_TYPE_CHECK_CLASS_TYPE((klass),GSW_TYPE_INTER_SUB_SINK))
 
-typedef struct _DvsInterSubSink DvsInterSubSink;
-typedef struct _DvsInterSubSinkClass DvsInterSubSinkClass;
+typedef struct _GswInterSubSink GswInterSubSink;
+typedef struct _GswInterSubSinkClass GswInterSubSinkClass;
 
-struct _DvsInterSubSink
+struct _GswInterSubSink
 {
   GstBaseSink base_intersubsink;
 
   GstPad *sinkpad;
-  DvsInterSurface *surface;
+  GswInterSurface *surface;
   char *channel;
 
   int fps_n;
   int fps_d;
 };
 
-struct _DvsInterSubSinkClass
+struct _GswInterSubSinkClass
 {
   GstBaseSinkClass base_intersubsink_class;
 };
 
-GType dvs_inter_sub_sink_get_type (void);
+GType gsw_inter_sub_sink_get_type (void);
 
 G_END_DECLS
 

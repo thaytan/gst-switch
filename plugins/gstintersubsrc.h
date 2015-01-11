@@ -25,32 +25,32 @@
 
 G_BEGIN_DECLS
 
-#define DVS_TYPE_INTER_SUB_SRC   (dvs_inter_sub_src_get_type())
-#define GST_INTER_SUB_SRC(obj)   (G_TYPE_CHECK_INSTANCE_CAST((obj),DVS_TYPE_INTER_SUB_SRC,DvsInterSubSrc))
-#define GST_INTER_SUB_SRC_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST((klass),DVS_TYPE_INTER_SUB_SRC,DvsInterSubSrcClass))
-#define GST_IS_INTER_SUB_SRC(obj)   (G_TYPE_CHECK_INSTANCE_TYPE((obj),DVS_TYPE_INTER_SUB_SRC))
-#define GST_IS_INTER_SUB_SRC_CLASS(obj)   (G_TYPE_CHECK_CLASS_TYPE((klass),DVS_TYPE_INTER_SUB_SRC))
+#define GSW_TYPE_INTER_SUB_SRC   (gsw_inter_sub_src_get_type())
+#define GST_INTER_SUB_SRC(obj)   (G_TYPE_CHECK_INSTANCE_CAST((obj),GSW_TYPE_INTER_SUB_SRC,GswInterSubSrc))
+#define GST_INTER_SUB_SRC_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST((klass),GSW_TYPE_INTER_SUB_SRC,GswInterSubSrcClass))
+#define GST_IS_INTER_SUB_SRC(obj)   (G_TYPE_CHECK_INSTANCE_TYPE((obj),GSW_TYPE_INTER_SUB_SRC))
+#define GST_IS_INTER_SUB_SRC_CLASS(obj)   (G_TYPE_CHECK_CLASS_TYPE((klass),GSW_TYPE_INTER_SUB_SRC))
 
-typedef struct _DvsInterSubSrc DvsInterSubSrc;
-typedef struct _DvsInterSubSrcClass DvsInterSubSrcClass;
+typedef struct _GswInterSubSrc GswInterSubSrc;
+typedef struct _GswInterSubSrcClass GswInterSubSrcClass;
 
-struct _DvsInterSubSrc
+struct _GswInterSubSrc
 {
   GstBaseSrc base_intersubsrc;
 
-  DvsInterSurface *surface;
+  GswInterSurface *surface;
   char *channel;
 
   int rate;
   int n_frames;
 };
 
-struct _DvsInterSubSrcClass
+struct _GswInterSubSrcClass
 {
   GstBaseSrcClass base_intersubsrc_class;
 };
 
-GType dvs_inter_sub_src_get_type (void);
+GType gsw_inter_sub_src_get_type (void);
 
 G_END_DECLS
 

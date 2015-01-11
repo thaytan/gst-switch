@@ -26,9 +26,9 @@
 
 G_BEGIN_DECLS
 
-typedef struct _DvsInterSurface DvsInterSurface;
+typedef struct _GswInterSurface GswInterSurface;
 
-struct _DvsInterSurface
+struct _GswInterSurface
 {
   GMutex mutex;
   gint ref_count;
@@ -55,8 +55,8 @@ struct _DvsInterSurface
 #define DEFAULT_AUDIO_PERIOD_TIME  (25 * GST_MSECOND)
 
 
-DvsInterSurface * dvs_inter_surface_get (const char *name);
-void dvs_inter_surface_unref (DvsInterSurface *surface);
+GswInterSurface * gsw_inter_surface_get (const char *name);
+void gsw_inter_surface_unref (GswInterSurface *surface);
 
 
 G_END_DECLS

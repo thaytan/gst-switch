@@ -47,29 +47,29 @@
 
 #include <string.h>
 
-GST_DEBUG_CATEGORY_STATIC (dvs_inter_audio_src_debug_category);
-#define GST_CAT_DEFAULT dvs_inter_audio_src_debug_category
+GST_DEBUG_CATEGORY_STATIC (gsw_inter_audio_src_debug_category);
+#define GST_CAT_DEFAULT gsw_inter_audio_src_debug_category
 
 /* prototypes */
-static void dvs_inter_audio_src_set_property (GObject * object,
+static void gsw_inter_audio_src_set_property (GObject * object,
     guint property_id, const GValue * value, GParamSpec * pspec);
-static void dvs_inter_audio_src_get_property (GObject * object,
+static void gsw_inter_audio_src_get_property (GObject * object,
     guint property_id, GValue * value, GParamSpec * pspec);
-static void dvs_inter_audio_src_finalize (GObject * object);
+static void gsw_inter_audio_src_finalize (GObject * object);
 
-static GstCaps *dvs_inter_audio_src_get_caps (GstBaseSrc * src,
+static GstCaps *gsw_inter_audio_src_get_caps (GstBaseSrc * src,
     GstCaps * filter);
-static gboolean dvs_inter_audio_src_set_caps (GstBaseSrc * src, GstCaps * caps);
-static gboolean dvs_inter_audio_src_start (GstBaseSrc * src);
-static gboolean dvs_inter_audio_src_stop (GstBaseSrc * src);
+static gboolean gsw_inter_audio_src_set_caps (GstBaseSrc * src, GstCaps * caps);
+static gboolean gsw_inter_audio_src_start (GstBaseSrc * src);
+static gboolean gsw_inter_audio_src_stop (GstBaseSrc * src);
 static void
-dvs_inter_audio_src_get_times (GstBaseSrc * src, GstBuffer * buffer,
+gsw_inter_audio_src_get_times (GstBaseSrc * src, GstBuffer * buffer,
     GstClockTime * start, GstClockTime * end);
 static GstFlowReturn
-dvs_inter_audio_src_create (GstBaseSrc * src, guint64 offset, guint size,
+gsw_inter_audio_src_create (GstBaseSrc * src, guint64 offset, guint size,
     GstBuffer ** buf);
-static gboolean dvs_inter_audio_src_query (GstBaseSrc * src, GstQuery * query);
-static GstCaps *dvs_inter_audio_src_fixate (GstBaseSrc * src, GstCaps * caps);
+static gboolean gsw_inter_audio_src_query (GstBaseSrc * src, GstQuery * query);
+static GstCaps *gsw_inter_audio_src_fixate (GstBaseSrc * src, GstCaps * caps);
 
 enum
 {
@@ -81,7 +81,7 @@ enum
 };
 
 /* pad templates */
-static GstStaticPadTemplate dvs_inter_audio_src_src_template =
+static GstStaticPadTemplate gsw_inter_audio_src_src_template =
 GST_STATIC_PAD_TEMPLATE ("src",
     GST_PAD_SRC,
     GST_PAD_ALWAYS,
@@ -90,21 +90,21 @@ GST_STATIC_PAD_TEMPLATE ("src",
 
 
 /* class initialization */
-#define parent_class dvs_inter_audio_src_parent_class
-G_DEFINE_TYPE (DvsInterAudioSrc, dvs_inter_audio_src, GST_TYPE_BASE_SRC);
+#define parent_class gsw_inter_audio_src_parent_class
+G_DEFINE_TYPE (GswInterAudioSrc, gsw_inter_audio_src, GST_TYPE_BASE_SRC);
 
 static void
-dvs_inter_audio_src_class_init (DvsInterAudioSrcClass * klass)
+gsw_inter_audio_src_class_init (GswInterAudioSrcClass * klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GstElementClass *element_class = GST_ELEMENT_CLASS (klass);
   GstBaseSrcClass *base_src_class = GST_BASE_SRC_CLASS (klass);
 
-  GST_DEBUG_CATEGORY_INIT (dvs_inter_audio_src_debug_category, "interaudiosrc",
+  GST_DEBUG_CATEGORY_INIT (gsw_inter_audio_src_debug_category, "interaudiosrc",
       0, "debug category for interaudiosrc element");
 
   gst_element_class_add_pad_template (element_class,
-      gst_static_pad_template_get (&dvs_inter_audio_src_src_template));
+      gst_static_pad_template_get (&gsw_inter_audio_src_src_template));
 
   gst_element_class_set_static_metadata (element_class,
       "Internal audio source",
@@ -112,17 +112,17 @@ dvs_inter_audio_src_class_init (DvsInterAudioSrcClass * klass)
       "Virtual audio source for internal process communication",
       "David Schleef <ds@schleef.org>");
 
-  gobject_class->set_property = dvs_inter_audio_src_set_property;
-  gobject_class->get_property = dvs_inter_audio_src_get_property;
-  gobject_class->finalize = dvs_inter_audio_src_finalize;
-  base_src_class->get_caps = GST_DEBUG_FUNCPTR (dvs_inter_audio_src_get_caps);
-  base_src_class->set_caps = GST_DEBUG_FUNCPTR (dvs_inter_audio_src_set_caps);
-  base_src_class->start = GST_DEBUG_FUNCPTR (dvs_inter_audio_src_start);
-  base_src_class->stop = GST_DEBUG_FUNCPTR (dvs_inter_audio_src_stop);
-  base_src_class->get_times = GST_DEBUG_FUNCPTR (dvs_inter_audio_src_get_times);
-  base_src_class->create = GST_DEBUG_FUNCPTR (dvs_inter_audio_src_create);
-  base_src_class->query = GST_DEBUG_FUNCPTR (dvs_inter_audio_src_query);
-  base_src_class->fixate = GST_DEBUG_FUNCPTR (dvs_inter_audio_src_fixate);
+  gobject_class->set_property = gsw_inter_audio_src_set_property;
+  gobject_class->get_property = gsw_inter_audio_src_get_property;
+  gobject_class->finalize = gsw_inter_audio_src_finalize;
+  base_src_class->get_caps = GST_DEBUG_FUNCPTR (gsw_inter_audio_src_get_caps);
+  base_src_class->set_caps = GST_DEBUG_FUNCPTR (gsw_inter_audio_src_set_caps);
+  base_src_class->start = GST_DEBUG_FUNCPTR (gsw_inter_audio_src_start);
+  base_src_class->stop = GST_DEBUG_FUNCPTR (gsw_inter_audio_src_stop);
+  base_src_class->get_times = GST_DEBUG_FUNCPTR (gsw_inter_audio_src_get_times);
+  base_src_class->create = GST_DEBUG_FUNCPTR (gsw_inter_audio_src_create);
+  base_src_class->query = GST_DEBUG_FUNCPTR (gsw_inter_audio_src_query);
+  base_src_class->fixate = GST_DEBUG_FUNCPTR (gsw_inter_audio_src_fixate);
 
   g_object_class_install_property (gobject_class, PROP_CHANNEL,
       g_param_spec_string ("channel", "Channel",
@@ -148,7 +148,7 @@ dvs_inter_audio_src_class_init (DvsInterAudioSrcClass * klass)
 }
 
 static void
-dvs_inter_audio_src_init (DvsInterAudioSrc * interaudiosrc)
+gsw_inter_audio_src_init (GswInterAudioSrc * interaudiosrc)
 {
   gst_base_src_set_format (GST_BASE_SRC (interaudiosrc), GST_FORMAT_TIME);
   gst_base_src_set_live (GST_BASE_SRC (interaudiosrc), TRUE);
@@ -161,10 +161,10 @@ dvs_inter_audio_src_init (DvsInterAudioSrc * interaudiosrc)
 }
 
 void
-dvs_inter_audio_src_set_property (GObject * object, guint property_id,
+gsw_inter_audio_src_set_property (GObject * object, guint property_id,
     const GValue * value, GParamSpec * pspec)
 {
-  DvsInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (object);
+  GswInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (object);
 
   switch (property_id) {
     case PROP_CHANNEL:
@@ -187,10 +187,10 @@ dvs_inter_audio_src_set_property (GObject * object, guint property_id,
 }
 
 void
-dvs_inter_audio_src_get_property (GObject * object, guint property_id,
+gsw_inter_audio_src_get_property (GObject * object, guint property_id,
     GValue * value, GParamSpec * pspec)
 {
-  DvsInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (object);
+  GswInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (object);
 
   switch (property_id) {
     case PROP_CHANNEL:
@@ -212,20 +212,20 @@ dvs_inter_audio_src_get_property (GObject * object, guint property_id,
 }
 
 void
-dvs_inter_audio_src_finalize (GObject * object)
+gsw_inter_audio_src_finalize (GObject * object)
 {
-  DvsInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (object);
+  GswInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (object);
 
   /* clean up object here */
   g_free (interaudiosrc->channel);
 
-  G_OBJECT_CLASS (dvs_inter_audio_src_parent_class)->finalize (object);
+  G_OBJECT_CLASS (gsw_inter_audio_src_parent_class)->finalize (object);
 }
 
 static GstCaps *
-dvs_inter_audio_src_get_caps (GstBaseSrc * src, GstCaps * filter)
+gsw_inter_audio_src_get_caps (GstBaseSrc * src, GstCaps * filter)
 {
-  DvsInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
+  GswInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
   GstCaps *caps;
 
   GST_DEBUG_OBJECT (interaudiosrc, "get_caps");
@@ -255,9 +255,9 @@ dvs_inter_audio_src_get_caps (GstBaseSrc * src, GstCaps * filter)
 }
 
 static gboolean
-dvs_inter_audio_src_set_caps (GstBaseSrc * src, GstCaps * caps)
+gsw_inter_audio_src_set_caps (GstBaseSrc * src, GstCaps * caps)
 {
-  DvsInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
+  GswInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
 
   GST_DEBUG_OBJECT (interaudiosrc, "set_caps");
 
@@ -270,13 +270,13 @@ dvs_inter_audio_src_set_caps (GstBaseSrc * src, GstCaps * caps)
 }
 
 static gboolean
-dvs_inter_audio_src_start (GstBaseSrc * src)
+gsw_inter_audio_src_start (GstBaseSrc * src)
 {
-  DvsInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
+  GswInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
 
   GST_DEBUG_OBJECT (interaudiosrc, "start");
 
-  interaudiosrc->surface = dvs_inter_surface_get (interaudiosrc->channel);
+  interaudiosrc->surface = gsw_inter_surface_get (interaudiosrc->channel);
   interaudiosrc->timestamp_offset = 0;
   interaudiosrc->n_samples = 0;
 
@@ -290,23 +290,23 @@ dvs_inter_audio_src_start (GstBaseSrc * src)
 }
 
 static gboolean
-dvs_inter_audio_src_stop (GstBaseSrc * src)
+gsw_inter_audio_src_stop (GstBaseSrc * src)
 {
-  DvsInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
+  GswInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
 
   GST_DEBUG_OBJECT (interaudiosrc, "stop");
 
-  dvs_inter_surface_unref (interaudiosrc->surface);
+  gsw_inter_surface_unref (interaudiosrc->surface);
   interaudiosrc->surface = NULL;
 
   return TRUE;
 }
 
 static void
-dvs_inter_audio_src_get_times (GstBaseSrc * src, GstBuffer * buffer,
+gsw_inter_audio_src_get_times (GstBaseSrc * src, GstBuffer * buffer,
     GstClockTime * start, GstClockTime * end)
 {
-  DvsInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
+  GswInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
 
   GST_DEBUG_OBJECT (src, "get_times");
 
@@ -328,10 +328,10 @@ dvs_inter_audio_src_get_times (GstBaseSrc * src, GstBuffer * buffer,
 }
 
 static GstFlowReturn
-dvs_inter_audio_src_create (GstBaseSrc * src, guint64 offset, guint size,
+gsw_inter_audio_src_create (GstBaseSrc * src, guint64 offset, guint size,
     GstBuffer ** buf)
 {
-  DvsInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
+  GswInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
   GstCaps *caps;
   GstBuffer *buffer;
   guint n, bpf;
@@ -429,9 +429,9 @@ dvs_inter_audio_src_create (GstBaseSrc * src, guint64 offset, guint size,
 }
 
 static gboolean
-dvs_inter_audio_src_query (GstBaseSrc * src, GstQuery * query)
+gsw_inter_audio_src_query (GstBaseSrc * src, GstQuery * query)
 {
-  DvsInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
+  GswInterAudioSrc *interaudiosrc = GST_INTER_AUDIO_SRC (src);
   gboolean ret;
 
   GST_DEBUG_OBJECT (src, "query");
@@ -454,7 +454,7 @@ dvs_inter_audio_src_query (GstBaseSrc * src, GstQuery * query)
       break;
     }
     default:
-      ret = GST_BASE_SRC_CLASS (dvs_inter_audio_src_parent_class)->query (src,
+      ret = GST_BASE_SRC_CLASS (gsw_inter_audio_src_parent_class)->query (src,
           query);
       break;
   }
@@ -463,7 +463,7 @@ dvs_inter_audio_src_query (GstBaseSrc * src, GstQuery * query)
 }
 
 static GstCaps *
-dvs_inter_audio_src_fixate (GstBaseSrc * src, GstCaps * caps)
+gsw_inter_audio_src_fixate (GstBaseSrc * src, GstCaps * caps)
 {
   GstStructure *structure;
 
